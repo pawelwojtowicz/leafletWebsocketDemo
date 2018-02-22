@@ -1,0 +1,20 @@
+{
+  "name": "wojcloud",
+  "version": "1.0.0",
+  "description": "This is a small www server, with forwarding the CAN traffic to viriciti cloud",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "can",
+    "fms"
+  ],
+  "author": "Pawel W.",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2",
+    "morgan": "^1.9.0",
+    "websocket": "^1.0.25"
+  }
+}
