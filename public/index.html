@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="canMap">
 <head>
 <meta charset="utf-8">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>
-
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" crossorigin=""/>
 <link rel="stylesheet" href="css/app.css">
+<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" crossorigin=""></script>
+<script src="js/angular.min.js"></script>
+<script src="js/angular-leaflet-directive.min.js"></script>
+<script src="js/ng-websocket.js"></script>
+<script src="js/app.js"></script>
 </head>
 <body>
 <h1>This is a test</h1>
-<div id="mapid"></div>
-<script src="js/app.js"></script>
+<div ng-controller="mapController as vm">
+  <leaflet markers="vm.busMark" lf-center="vm.vhPosition" tiles="vm.tiles" defaults="defaults" width="100%" height="600px"></leaflet>
+</div>
+<p ng-controller="speedController as vm">Speed: {{vm.speed}}</p>
+
  
 </body>
 </html>

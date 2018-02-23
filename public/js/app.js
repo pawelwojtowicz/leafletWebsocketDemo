@@ -1,23 +1,81 @@
-var position = {longitude: 51.1552819, latitude:16.8978038};
+var app = angular.module("canMap", ["leaflet-directive", "ngWebsocket"]);
 
-var mymap = L.map('mapid').setView([position.longitude, position.latitude], 13);
+app.service('backendInfoService', [ "$rootScope", "$websocket", function($rootScope, $websocket) {
+  var vm = this;
+  vm.listeners = [];
 
-L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', 
-{
-maxZoom: 18,
-attribution: 'Trapeze test implementation',
-id: 'mapbox.streets'
-}).addTo(mymap);
+  var ws = $websocket.$new({
+      url: "ws://" + window.location.host ,
+      //mock: true,
+      reconnect: true
+  });
+  
+  ws.$on("$message", function (message) {
+    //console.log(message);
+    var vhInfo = JSON.parse(message);
+    //console.log("new position" + JSON.stringify(vhInfo));
+    vm.listeners.forEach( function( clbk ) {
+      clbk(vhInfo);
+    });
+    
+    if(!$rootScope.$$phase) { // prevents triggering a $digest if there's already one in progress
+      $rootScope.$digest();
+    }
+  });
+  
+  vm.registerVhInfoListener = function( listener) {
+    vm.listeners.push( listener);
+  }
+}]);
 
-L.marker([position.longitude, position.latitude]).addTo(mymap);
+app.controller('mapController', [ 'backendInfoService', function(backendInfoService) {
+  var vm = this;
+  
+  vm.tiles = {
+    url: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    options: {
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }
+  };
+  
+  vm.vhPosition = {
+    lat: 51.1552819,
+    lng: 16.8978038,
+    zoom: 18
+  };
+  
+  vm.updateVhPosition = function( vhInfo ) {
+    vm.vhPosition.lat = vhInfo.latitude;
+    vm.vhPosition.lng = vhInfo.longitude;
+    
+    vm.busMark = {
+        bus1: {
+            lat: vm.vhPosition.lat,
+            lng: vm.vhPosition.lng,
+            message: "Bus",
+            focus: true,
+            draggable: false
+        }
+    };
+    
+    console.log("new position" + JSON.stringify(vm.vhPosition));
+  };
+  
+  backendInfoService.registerVhInfoListener( vm.updateVhPosition );
 
+}]);
 
-var websockerAddress = "ws://"+window.location.host;
+app.controller('speedController', [ 'backendInfoService', function(backendInfoService) {
+  var vm = this;
+  
+  vm.speed = 0;
+  
+  
+  vm.updateSpeed = function( vhInfo ) {
+    vm.speed = vhInfo.speed;
+    console.log("new speed" + vm.speed);
+  };
+  
+  backendInfoService.registerVhInfoListener( vm.updateSpeed );
 
-var websocket = new WebSocket(websockerAddress);
-
-websocket.onmessage = function(evt) {
-  position = JSON.parse(evt.data);
-  mymap.panTo(new L.LatLng(position.longitude, position.latitude));
-  L.marker([position.longitude, position.latitude]).addTo(mymap);
-};
+}]);

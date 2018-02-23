@@ -1,5 +1,5 @@
-var vehicleData = { longitude : 51.1552819 , 
-                    latitude : 16.8978038 ,
+var vehicleData = { longitude : 16.8978038 , 
+                    latitude :  51.1552819,
                     speed : 150 };
                     
 var updateProcedure = null;
@@ -21,7 +21,7 @@ function updateSpeed( canPayload ) {
   var speed = parseInt(speedHex) * 1/256;
   
   vehicleData.speed = speed;
-}
+};
 
 exports.initialize = function( externalUpdateProcedure ) {
   updateProcedure = externalUpdateProcedure;
@@ -60,6 +60,8 @@ exports.processVehicleMessage = function ( message) {
 
 exports.updateVehicleInfo = function() {
   if (updateProcedure !== null) {
+    //vehicleData.latitude = vehicleData.latitude + 0.0001;
+    //++vehicleData.speed;
     var vehicleDataJSONString = JSON.stringify(vehicleData);
     updateProcedure(vehicleDataJSONString);
   }
