@@ -60,6 +60,7 @@ exports.processVehicleMessage = function ( message) {
 
 exports.updateVehicleInfo = function() {
   if (updateProcedure !== null) {
+    ++vehicleData.speed;
     var vehicleDataJSONString = JSON.stringify(vehicleData);
     updateProcedure(vehicleDataJSONString);
   }
