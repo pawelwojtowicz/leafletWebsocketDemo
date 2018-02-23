@@ -7,14 +7,15 @@
 <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" crossorigin=""></script>
 <script src="js/angular.min.js"></script>
 <script src="js/angular-leaflet-directive.min.js"></script>
-<script src="js/app2.js"></script>
+<script src="js/ng-websocket.js"></script>
+<script src="js/app.js"></script>
 </head>
 <body>
 <h1>This is a test</h1>
 <div ng-controller="mapController as vm">
-  <leaflet lf-center="vm.vhPosition" tiles="vm.tiles" defaults="defaults" width="100%" height="480px"></leaflet>
+  <leaflet markers="vm.busMark" lf-center="vm.vhPosition" tiles="vm.tiles" defaults="defaults" width="100%" height="600px"></leaflet>
 </div>
-<p ng-controller="speedController as vm">{{vm.speed}}</p>
+<p ng-controller="speedController as vm">Speed: {{vm.speed}}</p>
 
  
 </body>
