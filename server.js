@@ -1,9 +1,5 @@
 var httpPort = 8080;
 
-var long = 51.1552819;
-var lat = 16.8978038;
-var jump = 0.00100;
-
 var express = require('express');
 var morgan = require('morgan');
 var app = express();
@@ -29,10 +25,9 @@ app.use(morgan('dev'));
 canProcessor.initialize(sendToWWWClientsFunction);
 
 setInterval(function () {
-  console.log("Update Vehicle Info!");
   canProcessor.updateVehicleInfo();
 
-}, 5000);
+}, 1000);
 
 
 app.listen(httpPort);

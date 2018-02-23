@@ -32,8 +32,6 @@ exports.processVehicleMessage = function ( message) {
   var begin = -1;
   var updateNeeded = false;
   
-  console.log(message);
-  
   for ( var i = 0; i< messageLength ; ++i ) {
     var character = message[i];
   
