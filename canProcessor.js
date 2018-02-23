@@ -12,34 +12,16 @@ function updateVehicleInfo() {
 }
 
 function updateGPSPosition( canPayload) {
-  console.log( "updateGPS - "+ canPayload);
-  
-  var latHexString = "";
-  var lonHexString = "";
-  
-  for ( i = 0 ; i < 16 ; ) {
-    if ( i < 8 ) {
-      latHexString = canPayload[i+1] + latHexString;
-      latHexString = canPayload[i] + latHexString;
-    } else {
-      lonHexString = canPayload[i+1] + lonHexString;
-      lonHexString = canPayload[i] + lonHexString;
-    }
-    
-    i += 2;
-  }
-  
-  vehicleData.longitude = Buffer(lonHexString,'hex').readFloatBE(0);
-  vehicleData.latitude  = Buffer(latHexString,'hex').readFloatBE(0);
-  
-  
-  console.log("lat="+ latHexString + " lon="+ lonHexString);
+  vehicleData.longitude = Buffer(canPayload.substring(0,8),'hex').readFloatBE(0);
+  vehicleData.latitude  = Buffer(canPayload.substring(8,16),'hex').readFloatBE(0);
 }
 
 function updateSpeed( canPayload ) {
-
+  var speedHex = "0x"+canPayload.substring(4,6) + canPayload.substring(2,4);
+  var speed = parseInt(speedHex) * 1/256;
+  
+  vehicleData.speed = speed;
 }
-
 
 exports.initialize = function( externalUpdateProcedure ) {
   updateProcedure = externalUpdateProcedure;
@@ -48,9 +30,11 @@ exports.initialize = function( externalUpdateProcedure ) {
 exports.processVehicleMessage = function ( message) {
   var messageLength = message.length;
   var begin = -1;
-  var updateNeeded = true;
+  var updateNeeded = false;
   
-  for ( i = 0; i< messageLength ; ++i ) {
+  console.log(message);
+  
+  for ( var i = 0; i< messageLength ; ++i ) {
     var character = message[i];
   
     if ( character === '{') {
@@ -58,20 +42,27 @@ exports.processVehicleMessage = function ( message) {
     } else if ( begin !== -1 && character === '}' ) {
       var singleMessage = message.substring( begin,(i+1>messageLength)?i:i+1);
       var canObject = JSON.parse(singleMessage);
-      console.log( "can ID = " + String(canObject.c));
-      
+            
       if ( canObject.c === 2000 ) {
         updateGPSPosition( canObject.d);
         updateNeeded = true;
-      } else if ( canObject.c === 1999 ) {
+      } else if ( canObject.c === 419361024 ) {
         updateSpeed(canObject.d);
         updateNeeded = true;
       }
       
-      if ( updateNeeded ) {
-        updateVehicleInfo();
-      }
       begin = -1;
     }
+  }
+  
+  if ( 0 ) {
+    updateVehicleInfo();
+  }
+}
+
+exports.updateVehicleInfo = function() {
+  if (updateProcedure !== null) {
+    var vehicleDataJSONString = JSON.stringify(vehicleData);
+    updateProcedure(vehicleDataJSONString);
   }
 }

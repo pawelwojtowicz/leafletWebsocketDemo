@@ -18,8 +18,9 @@ var sendToWWWClientsFunction = function( message ) {
 }
 app.ws('/', function(ws, req) { });
 app.ws('/vehicle', function( ws, req) {
+  console.log("Vehicle Connected!");
   ws.on('message', function ( msg ) {
-    canProcessor.processVehicleMessage(msg)
+    canProcessor.processVehicleMessage(msg);
   });
 });
 app.use(express.static(__dirname + '/public'));
@@ -28,10 +29,10 @@ app.use(morgan('dev'));
 canProcessor.initialize(sendToWWWClientsFunction);
 
 setInterval(function () {
-  var stringOfMessages = '{\"c\":2000, \"d\":\"0123456789abcdef\", \"t\":32123433}{\"c\":1999, \"d\":\"fedcba9876543210\", \"t\":32123431}';
-  console.log(stringOfMessages);
-  canProcessor.processVehicleMessage(stringOfMessages);
-}, 1000);
+  console.log("Update Vehicle Info!");
+  canProcessor.updateVehicleInfo();
+
+}, 5000);
 
 
 app.listen(httpPort);
